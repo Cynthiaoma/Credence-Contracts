@@ -1,4 +1,4 @@
-#no_std
+#![no_std]
 #![deny(clippy::float_arithmetic)]
 #![cfg_attr(not(test), deny(clippy::disallowed_macros))]
 #[allow(
@@ -20,11 +20,8 @@
 // a later allow would re-silence it. cargo build --release / WASM build
 // is the only mode where this deny fires (tests
 // stay free to use format!/write! for diagnostics).
-
-
 use credence_errors::ContractError;
 use ethnum::I256;
-use soroban_sdk;
 
 pub mod fixed_point;
 pub mod rate;
@@ -69,7 +66,13 @@ pub fn sat_mul_bps(value: i128, bps: u32) -> i128 {
 /// Returns (fee, net) where fee = (value * bps) / BPS_DENOMINATOR and net = value - fee.
 /// The operation names (mul_op, div_op, sub_op) are for panic messages only.
 #[inline]
-pub fn split_bps(value: i128, bps: u32, _mul_op: &str, _div_op: &str, _sub_op: &str) -> (i128, i128) {
+pub fn split_bps(
+    value: i128,
+    bps: u32,
+    _mul_op: &str,
+    _div_op: &str,
+    _sub_op: &str,
+) -> (i128, i128) {
     let fee = (value as i128).saturating_mul(bps as i128) / BPS_DENOMINATOR;
     let net = value.saturating_sub(fee);
     (fee, net)
@@ -197,7 +200,7 @@ pub fn mul_div_i128(a: i128, b: i128, denom: i128, rounding: Rounding, msg: &str
             if rem == I256::ZERO {
                 q
             } else {
-                // Compare 2*|rem} >= |d|.
+                // Compare 2*|rem| >= |d|.
                 let two_rem_abs = (rem.abs()) * I256::from(2u8);
                 let d_abs = d256.abs();
                 if two_rem_abs >= d_abs {

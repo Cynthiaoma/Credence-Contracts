@@ -3,7 +3,6 @@
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::FundSource;
     use soroban_sdk::testutils::{Address as _, Events};
     use soroban_sdk::{Address, Env, String, Symbol, Val};
@@ -103,7 +102,12 @@ mod tests {
         let treasury_debit = 490i128;
         e.events().publish(
             (Symbol::new(&e, "treasury_withdrawal_executed"), proposal_id),
-            (recipient.clone(), min_amount_out, actual_amount, treasury_debit),
+            (
+                recipient.clone(),
+                min_amount_out,
+                actual_amount,
+                treasury_debit,
+            ),
         );
         let events = e.events().all();
         // Topics: treasury_withdrawal_executed, u64 (2)

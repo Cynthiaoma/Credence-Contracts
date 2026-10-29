@@ -1436,9 +1436,6 @@ impl ErrorExt for ContractError {
             | ContractError::BatchTooLarge         // reduce batch size
             | ContractError::EmptyBatch            // supply at least one item
             | ContractError::BytesTooLarge         // resubmit with shorter input
-            | ContractError::CooldownRequestAlreadyPending // wait for the existing request
-            | ContractError::CooldownRequestNotFound
-            | ContractError::CooldownPeriodNotElapsed     // wait for the cooldown to elapse
             => true,
 
             // FATAL Bond: caller cannot directly fix any of these.

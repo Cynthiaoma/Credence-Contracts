@@ -51,7 +51,9 @@ fn setup(env: &Env) -> (CredenceTreasuryClient<'_>, Address, Address, Address) {
     let client = CredenceTreasuryClient::new(env, &contract_id);
 
     let admin = Address::generate(env);
-    let token = env.register_stellar_asset_contract_v2(admin.clone()).address();
+    let token = env
+        .register_stellar_asset_contract_v2(admin.clone())
+        .address();
     let attacker = Address::generate(env);
 
     client.initialize(&admin, &token);
@@ -260,7 +262,8 @@ fn get_privileged_cases() -> alloc::vec::Vec<PrivilegedCase> {
                         sub_invokes: &[],
                     },
                 }]);
-                client.transfer_admin(&new_admin);            },
+                client.transfer_admin(&new_admin);
+            },
         },
         PrivilegedCase {
             name: "set_pause_signer",
@@ -389,7 +392,7 @@ fn test_propose_withdrawal_succeeds_as_signer() {
 #[test]
 fn test_receive_fee_rejects_non_depositor() {
     let env = Env::default();
-    let (client, _admin, token, attacker) = setup(&env);
+    let (client, _admin, _token, attacker) = setup(&env);
 
     env.mock_auths(&[soroban_sdk::testutils::MockAuth {
         address: &attacker,

@@ -211,7 +211,10 @@ mod tests {
         // div_wad: 1.0 / 3.0 has remainder.
         let qd = div_wad(WAD, 3 * WAD, "div_rem");
         let qu = div_wad_up(WAD, 3 * WAD, "div_up_rem");
-        assert!(qu > qd);
+        assert!(
+            qu > qd,
+            "div_wad_up must round above div_wad when there is a remainder"
+        );
         assert_eq!(qu - qd, 1);
     }
 
@@ -229,7 +232,10 @@ mod tests {
         // |Up| > |Down| for negative with remainder.
         let d = mul_wad(-3, WAD / 2, "neg_d");
         let u = mul_wad_up(-3, WAD / 2, "neg_u");
-        assert!(u.abs() > d.abs(), "Up must be further from zero than Down for negative");
+        assert!(
+            u.abs() > d.abs(),
+            "Up must be further from zero than Down for negative"
+        );
     }
 
     // ── Commutativity ────────────────────────────────────────────────────────
@@ -263,11 +269,7 @@ mod tests {
     /// −mul_wad(a, b) == mul_wad(−a, b) for representable inputs.
     #[test]
     fn mul_wad_negate_symmetry() {
-        let cases: &[(i128, i128)] = &[
-            (1, WAD),
-            (3, WAD / 2),
-            (WAD, WAD / 3),
-        ];
+        let cases: &[(i128, i128)] = &[(1, WAD), (3, WAD / 2), (WAD, WAD / 3)];
         for &(a, b) in cases {
             let pos = mul_wad(a, b, "sym");
             let neg = mul_wad(-a, b, "sym_neg");
@@ -278,11 +280,7 @@ mod tests {
     /// −div_wad(a, b) == div_wad(−a, b) for representable inputs.
     #[test]
     fn div_wad_negate_numerator_symmetry() {
-        let cases: &[(i128, i128)] = &[
-            (WAD, WAD),
-            (WAD, 3 * WAD),
-            (2 * WAD, WAD),
-        ];
+        let cases: &[(i128, i128)] = &[(WAD, WAD), (WAD, 3 * WAD), (2 * WAD, WAD)];
         for &(a, b) in cases {
             let pos = div_wad(a, b, "dsym");
             let neg = div_wad(-a, b, "dsym_neg");
@@ -300,7 +298,10 @@ mod tests {
         let mut prev = div_wad(a_values[0], b, "mono");
         for &a in &a_values[1..] {
             let cur = div_wad(a, b, "mono");
-            assert!(cur >= prev, "div_wad not monotone: f({a}) < f(prev) for b={b}");
+            assert!(
+                cur >= prev,
+                "div_wad not monotone: f({a}) < f(prev) for b={b}"
+            );
             prev = cur;
         }
     }
@@ -341,16 +342,19 @@ mod tests {
             (0, 0),
             (0, i128::MAX),
             (i128::MAX, 0),
-            (i128::MAX, WAD),          // no overflow (MAX * WAD / WAD = MAX)
-            (i128::MAX, 2 * WAD),      // overflows → clamp MAX
-            (i128::MIN, 2 * WAD),      // overflows → clamp MIN
-            (i128::MAX, i128::MAX),    // extreme overflow → clamp MAX
-            (i128::MIN, i128::MAX),    // mixed-sign extreme → clamp MIN
-            (-1, WAD),                 // small negative
+            (i128::MAX, WAD),       // no overflow (MAX * WAD / WAD = MAX)
+            (i128::MAX, 2 * WAD),   // overflows → clamp MAX
+            (i128::MIN, 2 * WAD),   // overflows → clamp MIN
+            (i128::MAX, i128::MAX), // extreme overflow → clamp MAX
+            (i128::MIN, i128::MAX), // mixed-sign extreme → clamp MIN
+            (-1, WAD),              // small negative
         ];
         for &(a, b) in inputs {
             let r = sat_mul_wad(a, b);
-            assert!(r >= i128::MIN && r <= i128::MAX, "out of range for ({a},{b})");
+            assert!(
+                r >= i128::MIN && r <= i128::MAX,
+                "out of range for ({a},{b})"
+            );
             // Second call must be identical (determinism).
             assert_eq!(sat_mul_wad(a, b), r, "non-deterministic for ({a},{b})");
         }
